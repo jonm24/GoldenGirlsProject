@@ -15,7 +15,7 @@ def create_user():
 
     return jsonify(post, 201)
 
-@app.route("/get-texts")
+@app.route("/get-texts", methods=["GET"])
 def get_user():
     res = db.fetch()
     all_items = res.items
