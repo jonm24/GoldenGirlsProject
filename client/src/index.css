@@ -12,14 +12,19 @@ code {
     monospace;
 }
 
+h1 {
+  padding: 0px 10px;
+}
 .flex {
   display: flex;
+  flex-wrap: wrap;
 }
 .column { 
   flex-direction: column;
 }
 
 .App {
+  padding: 50px 3px 0px 3px;
   padding-top: 50px;
   display: flex;
   align-items: center;
@@ -27,12 +32,31 @@ code {
 }
 
 .btn {
+  display: block;
   border: none;
-  margin: 0 20px;
+  margin: 5px 10px;
   padding: 10px 20px;
   background-color: black;
   color: white;
   border-radius: 0.5vh;
   text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  width: max-content;
+}
+
+.texts {
+  background-color: lightgrey;
+  border-radius: 0.5vh;
+  padding: 10px 30px;
+  margin: 15px 10px;
+}
+
+.texts-container {
+  margin-top: 20px;
+  max-width: 500px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
 }
 
