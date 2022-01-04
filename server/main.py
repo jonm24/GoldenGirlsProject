@@ -1,4 +1,3 @@
-from typing import Text
 from flask import Flask, request, jsonify
 from deta import Deta
 
@@ -16,7 +15,7 @@ def create_user():
 
     return jsonify(post)
 
-@app.route("/get-texts", methods=["GET"])
+@app.route("/texts", methods=["GET"])
 def get_texts():
     res = db.fetch()
     all_items = res.items
