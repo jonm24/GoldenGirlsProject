@@ -25,7 +25,7 @@ def get_text():
         res = db.fetch(last=res.last)
         all_items += res.items
 
-    return jsonify(all_items)
+    return jsonify(all_items, 201)
 
 @app.route("/texts/<key>", methods=["PUT"])
 def update_text():
