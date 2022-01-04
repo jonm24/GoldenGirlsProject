@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import './index.css'
 
 // helper component for text objects
@@ -7,41 +7,6 @@ function Text({id, data}) {
     <div className="texts">
       <p><strong>id: </strong>{id}</p>
       <p><strong>text: </strong>{data}</p>
-    </div>
-  )
-}
-
-// CREATE client page
-export function Create() {
-  const [text, setText] = useState("")
-  const [data, setData] = useState(null)
-
-  function createText(e) {
-    e.preventDefault()
-    fetch("https://an2wr0.deta.dev/text", { 
-      method: 'PUT',
-      body: JSON.stringify({"text": text }),
-      headers: {'Content-Type': 'application/json'},
-    }).then(data => data.json())
-      .then(data => setData(data))
-      .then(setText(""))
-  }
-
-  return (
-    <div className="flex column">
-      <h1>Create</h1>
-      {
-        data ?
-        <div className="flex column">
-          <Text id={data.key} data={data.text}></Text>
-          <div className="btn" onClick={() => setData(null)}>Reset</div>
-        </div>
-        :
-        <form onSubmit={(e) => createText(e)}>
-          <textarea onChange={(e) => setText(e.target.value)} style={{height: '80px', width: '250px'}}></textarea>
-          <input className="btn" type="submit" style={{marginLeft: '0', marginTop: '10px'}}></input>
-        </form>
-      }
     </div>
   )
 }
@@ -63,17 +28,101 @@ export function Read() {
   )
 }
 
-// UPDATE client page
-export function Update() {
+// DELETE client page
+export function Delete() {
+  const [key, setKey] = useState(null)
+  const [data, setData] = useState(null)
+
+  function deleteText() {
+    fetch(`https://an2wr0.deta.dev/text/${key}`, {method: 'DELETE'})
+      .then(data => data.json())
+      .then(data => setData(data))
+  }
+  
+  function reset() {
+    setData(null)
+    setKey(null)
+    document.getElementById("key").value = ""
+  }
+
   return (
-    <h1>Update</h1>
+    <div className="flex column">
+      <h1>Delete</h1>
+      <input 
+        id="key"
+        type="text" 
+        placeholder="key" 
+        onChange={(e) => setKey(e.target.value)}
+        style={{height: '20px', marginBottom: '15px'}}
+      />
+      {
+        data ?
+        <Fragment>
+          <p><strong>deleted: </strong>{data.deleted}</p>
+          <div className="btn" onClick={reset}>Reset</div>
+        </Fragment>
+        :
+        <div className="btn" onClick={deleteText}>Submit</div>
+      }
+    </div>
   )
 }
 
-// DELETE client page
-export function Delete() {
+// CREATE/UPDATE client page
+export function CreateUpdate() {
+  const [text, setText] = useState(null)
+  const [key, setKey] = useState(null)
+  const [data, setData] = useState(null)
+
+  function putText(e) {
+    e.preventDefault()
+
+    // update or create based on if key is not null
+    let obj = key ? {"key": key, "text": text} : {"text": text}
+
+    fetch("https://an2wr0.deta.dev/text", { 
+      method: 'PUT',
+      body: JSON.stringify(obj),
+      headers: {'Content-Type': 'application/json'},
+    }).then(data => data.json())
+      .then(data => setData(data))
+      .then(setText(null))
+      .then(setKey(null))
+  }
+
   return (
-    <h1>Delete</h1>
+    <div className="flex column">
+      <h1>Create/Update</h1>
+      {
+        data ?
+        <div className="flex column">
+          <Text id={data.key} data={data.text}></Text>
+          <div className="btn" onClick={() => setData(null)}>Reset</div>
+        </div>
+        :
+        <form onSubmit={(e) => putText(e)} className="flex column">
+          <input 
+            type="text" 
+            placeholder="key" 
+            onChange={(e) => setKey(e.target.value)}
+            style={{height: '20px'}}
+          />
+          <p>
+            (only input key if you want to update)
+          </p>
+          <textarea 
+            placeholder="text"
+            onChange={(e) => setText(e.target.value)}
+            style={{height: '80px', width: '250px', marginTop: '20px'}}
+          />
+          <input 
+            className="btn" 
+            type="submit" 
+            style={{marginLeft: '0', marginTop: '10px'}}
+          />
+        </form>
+      }
+    </div>
   )
 }
 
