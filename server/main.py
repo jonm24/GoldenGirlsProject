@@ -13,7 +13,7 @@ def create_user():
         "text": text,
     })
 
-    return jsonify(post, 201)
+    return jsonify(post)
 
 @app.route("/get-texts", methods=["GET"])
 def get_text():
@@ -25,7 +25,7 @@ def get_text():
         res = db.fetch(last=res.last)
         all_items += res.items
 
-    return jsonify(all_items, 201)
+    return jsonify(all_items)
 
 @app.route("/texts/<key>", methods=["PUT"])
 def update_text():
