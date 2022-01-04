@@ -5,16 +5,27 @@ deta = Deta("b0yb70gn_ADpnN6zsbaLTPh9Ypve3UpqNmKComzmc")
 db = deta.Base('simpleDB')
 app = Flask(__name__)
 
-@app.route('/post-text', methods=["POST"])
-def create_user():
-    text = request.json.get("text")
+# create and update. 
+# to create, just pass data (key generated)
+# to update, pass existing key with updated data
+@app.route("/text", methods=["PUT"])
+def update_text():
+    text = db.put(request.json)
+    return text if text else jsonify({"error": "Not found"}, 404)
 
-    post = db.put({
-        "text": text,
-    })
+# get text object by it's key
+@app.route("/text/<key>", methods=["GET"])
+def get_text(key):
+    text = db.get(key)
+    return text if text else jsonify({"error": "Not found"}, 404)
 
-    return jsonify(post)
+# delete text object by it's key
+@app.route("/text/<key>", methods=["DELETE"])
+def delete_text(key):
+    db.delete(key)
+    return
 
+# get all text objects
 @app.route("/texts", methods=["GET"])
 def get_texts():
     res = db.fetch()
@@ -26,18 +37,3 @@ def get_texts():
         all_items += res.items
 
     return jsonify(results=all_items)
-
-@app.route("/text/<key>", methods=["GET"])
-def get_text(key):
-    text = db.get(key)
-    return text if text else jsonify({"error": "Not found"}, 404)
-
-@app.route("/text/<key>", methods=["PUT"])
-def update_text():
-    text = db.put(request.json)
-    return text if text else jsonify({"error": "Not found"}, 404)
-
-@app.route("/text/<key>", methods=["DELETE"])
-def delete_text(key):
-    db.delete(key)
-    return
