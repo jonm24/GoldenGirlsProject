@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from deta import Deta
 
 deta = Deta()
 db = deta.Base('simpleDB')
 app = Flask(__name__)
+CORS(app)
 
 # check status of api
 @app.route("/", methods=["GET"])
