@@ -50,6 +50,7 @@ h1 {
   border-radius: 0.5vh;
   padding: 10px 30px;
   margin: 15px 10px;
+  box-shadow: 1px 1px 4px .5px rgb(103, 103, 103);
 }
 
 .texts-container {
