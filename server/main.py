@@ -1,9 +1,14 @@
 from flask import Flask, request, jsonify
 from deta import Deta
 
-deta = Deta("b0yb70gn_ADpnN6zsbaLTPh9Ypve3UpqNmKComzmc")
+deta = Deta()
 db = deta.Base('simpleDB')
 app = Flask(__name__)
+
+# check status of api
+@app.route("/", methods=["GET"])
+def index():
+    return jsonify(status="ok")
 
 # create and update. 
 # to create, just pass data (key generated)
@@ -16,14 +21,14 @@ def update_text():
 # get text object by it's key
 @app.route("/text/<key>", methods=["GET"])
 def get_text(key):
-    text = db.get(key)
+    text = db.get(str(key))
     return text if text else jsonify({"error": "Not found"}, 404)
 
 # delete text object by it's key
 @app.route("/text/<key>", methods=["DELETE"])
 def delete_text(key):
-    db.delete(key)
-    return
+    db.delete(str(key))
+    return jsonify(deleted=str(key))
 
 # get all text objects
 @app.route("/texts", methods=["GET"])
