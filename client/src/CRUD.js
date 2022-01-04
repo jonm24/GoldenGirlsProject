@@ -5,7 +5,7 @@ import './index.css'
 function Text({id, data}) {
   return (
     <div className="texts">
-      <p><strong>id: </strong>{id}</p>
+      <p><strong>key: </strong>{id}</p>
       <p><strong>text: </strong>{data}</p>
     </div>
   )
@@ -14,6 +14,7 @@ function Text({id, data}) {
 // READ client page
 export function Read() {
   const [data, setData] = useState([])
+  const [filter, setFilter] = useState(null)
 
   useEffect(() => {
     fetch("https://an2wr0.deta.dev/texts")
@@ -23,7 +24,20 @@ export function Read() {
 
   return (
     <div className="texts-container">
-      {data.map((elem, index) => <Text key={index} id={elem.key} data={elem.text} />)}
+      <div className="flex" style={{alignItems: "baseline"}}>
+        <p>search by key:</p>
+        <input 
+          type="text" 
+          placeholder="key" 
+          onChange={(e) => setFilter(e.target.value)}
+          style={{height: '20px', marginLeft: "10px"}}
+        />
+      </div>
+      {
+        data
+          .filter(elem => filter ? elem.key === filter : true)
+          .map((elem, index) => <Text key={index} id={elem.key} data={elem.text} />)
+      }
     </div>
   )
 }
