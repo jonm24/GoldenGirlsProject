@@ -4,4 +4,4 @@
 - python server code
 
 ### client directory
-- react front-end code
+- react front-end code (used create-react-app)

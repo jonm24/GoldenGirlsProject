@@ -27,6 +27,12 @@ code {
 }
 
 .btn {
-  outline: none;
+  border: none;
+  margin: 0 20px;
+  padding: 10px 20px;
+  background-color: black;
+  color: white;
+  border-radius: 0.5vh;
+  text-decoration: none;
 }
 
