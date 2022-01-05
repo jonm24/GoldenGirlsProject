@@ -186,5 +186,3 @@ function CreateUpdater({ setPerform, setText, setKey, obj }) {
     </Fragment>
   )
 }
-
-
