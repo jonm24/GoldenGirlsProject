@@ -13,7 +13,7 @@ function Text({id, data}) {
 
 // READ client page
 export function Read() {
-  const [data, setData] = useState([])
+  const [data, setData] = useState(null)
   const [filter, setFilter] = useState(null)
 
   useEffect(() => {
@@ -24,19 +24,26 @@ export function Read() {
 
   return (
     <div className="texts-container">
-      <div className="flex" style={{alignItems: "baseline"}}>
-        <p>search by key:</p>
-        <input 
-          type="text" 
-          placeholder="key" 
-          onChange={(e) => setFilter(e.target.value)}
-          style={{height: '20px', marginLeft: "10px"}}
-        />
-      </div>
-      {
-        data
-          .filter(elem => filter ? elem.key === filter : true)
-          .map((elem, index) => <Text key={index} id={elem.key} data={elem.text} />)
+      {data ?
+        <Fragment>
+          <div className="flex" style={{alignItems: "baseline"}}>
+            <p>search by key:</p>
+            <input 
+              type="text" 
+              placeholder="key" 
+              onChange={(e) => setFilter(e.target.value)}
+              style={{height: '20px', marginLeft: "10px"}}
+            />
+          </div>
+          <div className="flex" style={{justifyContent: "space-around"}}>
+            {data
+              .filter(elem => filter ? elem.key === filter : true)
+              .map((elem, index) => <Text key={index} id={elem.key} data={elem.text} />)
+            }
+          </div>
+        </Fragment>
+        :
+        <h2>loading...</h2>
       }
     </div>
   )
@@ -45,19 +52,7 @@ export function Read() {
 // DELETE client page
 export function Delete() {
   const [key, setKey] = useState(null)
-  const [data, setData] = useState(null)
-
-  function deleteText() {
-    fetch(`https://an2wr0.deta.dev/text/${key}`, {method: 'DELETE'})
-      .then(data => data.json())
-      .then(data => setData(data))
-  }
-  
-  function reset() {
-    setData(null)
-    setKey(null)
-    document.getElementById("key").value = ""
-  }
+  const [perform, setPerform] = useState(false)
 
   return (
     <div className="flex column">
@@ -69,50 +64,69 @@ export function Delete() {
         onChange={(e) => setKey(e.target.value)}
         style={{height: '20px', marginBottom: '15px'}}
       />
-      {
-        data ?
-        <Fragment>
-          <p><strong>deleted: </strong>{data.deleted}</p>
-          <div className="btn" onClick={reset}>Reset</div>
-        </Fragment>
+      { perform ?
+          <Deleter id={key} setKey={setKey} setPerform={setPerform}/>
         :
-        <div className="btn" onClick={deleteText}>Submit</div>
+          <div id="submit" className="btn" onClick={() => setPerform(true)}>Submit</div>
       }
     </div>
   )
 }
+// helper for delete 
+function Deleter({ id, setKey, setPerform }) {
+  const [data, setData] = useState(null)
+
+  useEffect(() => {
+    fetch(`https://an2wr0.deta.dev/text/${id}`, {method: 'DELETE'})
+      .then(data => data.json())
+      .then(data => setData(data))
+  }, [id])
+
+  function reset() {
+    setData(null)
+    setKey(null)
+    document.getElementById("key").value = ""
+    setPerform(false)
+  }
+
+  return (
+    <Fragment>
+      {data ?
+        <Fragment> 
+          <p><strong>deleted: </strong>{data.deleted}</p>
+          <div className="btn" onClick={reset}>Reset</div>
+        </Fragment>
+        : 
+        <h2>loading...</h2>
+      }
+    </Fragment>
+  )
+}
+
+
 
 // CREATE/UPDATE client page
 export function CreateUpdate() {
   const [text, setText] = useState(null)
   const [key, setKey] = useState(null)
-  const [data, setData] = useState(null)
+  const [perform, setPerform] = useState(false)
 
   function putText(e) {
     e.preventDefault()
-
-    // update or create based on if key is not null
-    let obj = key ? {"key": key, "text": text} : {"text": text}
-
-    fetch("https://an2wr0.deta.dev/text", { 
-      method: 'PUT',
-      body: JSON.stringify(obj),
-      headers: {'Content-Type': 'application/json'},
-    }).then(data => data.json())
-      .then(data => setData(data))
-      .then(setText(null))
-      .then(setKey(null))
+    setPerform(true)
   }
 
   return (
     <div className="flex column">
       <h1>Create/Update</h1>
       {
-        data ?
-        <div className="flex column">
-          <Text id={data.key} data={data.text}></Text>
-          <div className="btn" onClick={() => setData(null)}>Reset</div>
-        </div>
+        perform ?
+          <CreateUpdater 
+            setPerform={setPerform}
+            setText={setText}
+            setKey={setKey}
+            obj={key ? {"key": key, "text": text} : {"text": text}}
+          />
         :
         <form onSubmit={(e) => putText(e)} className="flex column">
           <input 
@@ -137,6 +151,39 @@ export function CreateUpdate() {
         </form>
       }
     </div>
+  )
+}
+// create update helper
+function CreateUpdater({ setPerform, setText, setKey, obj }) {
+  const [data, setData] = useState(null)
+
+  useEffect(() => {
+    fetch("https://an2wr0.deta.dev/text", { 
+      method: 'PUT',
+      body: JSON.stringify(obj),
+      headers: {'Content-Type': 'application/json'},
+    }).then(data => data.json())
+      .then(data => setData(data))
+  }, [obj])
+
+  function reset() {
+    setData(null)
+    setKey(null)
+    setText(null)
+    setPerform(false)
+  }
+
+  return (
+    <Fragment>
+      {data ?
+        <div className="flex column">
+          <Text id={data.key} data={data.text}></Text>
+          <div className="btn" onClick={reset}>Reset</div>
+        </div>
+        : 
+        <h2>loading...</h2>
+      }
+    </Fragment>
   )
 }
 
