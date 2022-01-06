@@ -1,6 +1,6 @@
 export const fakeEvents = [
   {
-    
+    "name": "hello"
   }, 
   {
 
