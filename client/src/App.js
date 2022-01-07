@@ -1,25 +1,39 @@
 import './index.css';
-import { Routes, Route, Link } from "react-router-dom";
-import { CreateUpdate, Read, Delete } from "./CRUD";
 
-function App() {
+export default function App() {
   return (
     <div className="App">
-      <h1>Golden Girls Client App</h1>
-
-      <div className="flex">
-        <Link to="/put" className="btn">Create/Update</Link>
-        <Link to="/" className="btn">Read</Link>
-        <Link to="/delete" className="btn">Delete</Link>
+      <h1>Golden Girls</h1>
+      <input type="text" className="search" placeholder="Search"></input>
+      <div className="main-container">
+        <Upcoming />
+        <Events />
       </div>
-
-      <Routes>
-        <Route path="put" element={<CreateUpdate />} />
-        <Route path="" element={<Read />} />
-        <Route path="delete" element={<Delete />} />
-      </Routes>
     </div>
   );
 }
 
-export default App;
+function Upcoming() {
+  return (
+    <div style={{textAlign: "center"}}>
+      <h2>Upcoming Events</h2>
+      <div className="upcoming-container">
+
+      </div>
+    </div>
+  )
+}
+
+function Events() {
+  return (
+    <div style={{textAlign: "center", position: 'relative'}}>
+      <h2>My Events</h2>
+      <button className="create-event"></button>
+      <div className="events-container">
+        {[0,1,2,3,4,5]
+          .map(elem => <div key={elem} className="card"></div>)
+        }
+      </div>
+    </div>
+  )
+}
