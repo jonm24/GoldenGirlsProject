@@ -5,6 +5,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #2e2e2e;
 }
 
 code {
@@ -12,8 +13,9 @@ code {
     monospace;
 }
 
-h1 {
+h1, h2 {
   padding: 0px 10px;
+  color: white;
 }
 .flex {
   display: flex;
@@ -30,34 +32,80 @@ h1 {
   align-items: center;
   flex-direction: column;
 }
-
-.btn {
-  display: block;
-  border: none;
-  margin: 5px 10px;
-  padding: 10px 20px;
-  background-color: black;
-  color: white;
-  border-radius: 0.5vh;
-  text-decoration: none;
-  text-align: center;
-  cursor: pointer;
-  width: max-content;
+.main-container {
+  display: flex;
+  width: 1000px;
+  justify-content: space-around;
 }
-
-.texts {
-  background-color: lightgrey;
-  border-radius: 0.5vh;
-  padding: 10px 30px;
-  margin: 15px 10px;
-  box-shadow: 1px 1px 4px .5px rgb(103, 103, 103);
+.upcoming-container {
+  width: 300px;
+  height: 600px;
+  background-color: #ffffff;
+  border-radius: 1vh;
 }
-
-.texts-container {
-  margin-top: 20px;
-  max-width: 500px;
+.events-container {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   justify-content: space-evenly;
+  width: 600px;
+  height: 600px;
+  background-color: #2e2e2e;
+  border-radius: 1vh;
+}
+.card {
+  width: 270px;
+  height: 150px;
+  border-radius: 1vh;
+  background-color: rgb(255, 255, 255);
+  margin: 10px;
+}
+.create-event {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  border: none;
+  cursor: pointer;
+  right: 25px;
+  top: 35px;
+  background-color: white;
+  height: 45px;
+  width: 45px;
+  border-radius: 50%;
+  font-size: 35px;
+  font-weight: bolder;
+  text-align: center;
+  transition: width 0.2s, border-radius 0.2s, font-size 0.2s ease;
+}
+.create-event::after {
+  content: '+';
+}
+.create-event:hover {
+  width: 150px;
+  border-radius: 0.5vh;
+  font-size: 18px;
+}
+.create-event:hover::after {
+  animation-name: changeContent;
+  animation-delay: 100ms;
+  animation-duration: .1s;
+  animation-fill-mode: forwards;
+}
+@keyframes changeContent {
+  from {
+    content: '+';
+  }
+  to {
+    content: 'Create Event';
+  }
 }
 
+.search {
+  outline: none;
+  border: none;
+  height: 25px;
+  width: 200px;
+  padding: 5px 15px;
+  border-radius: 2vh;
+}
