@@ -38,6 +38,26 @@ export const fakeEvents = [
     "picture": "https://dummyimage.com/600x400/099ae8/f7edee&text=Tea+Party",
     "description": "Come by and enjoy the nice weather tomorrow with Paula and her family",
     "host": "TheePaulaDee"
+  },
+  {
+    "id": "7e347yf2-291n-46rt-230e-3185648c0395",
+    "name": "Beginner Pottery Class", 
+    "location": "937 W Fullerton/Chicago/Illinois/60603",
+    "created_at": "2022/02/12",
+    "time": "2022/05/06/16/30",
+    "picture": "https://dummyimage.com/600x400/120412/e8e1e8&text=DONDA+LISTENING+PARTY",
+    "description": "Come join us to learn the basics of pottery! Only $25 by signing up online.",
+    "host": "ChicagoPottery"
+  },
+  {
+    "id": "be638g69-d3t9-44ee-a314-f5d6a2399472",
+    "name": "Willem DaFoe's Art Auction: Los Angeles Edition", 
+    "location": "1029 Rodeo Drive/Los Angeles/California /28078",
+    "created_at": "2022/02/16",
+    "time": "2022/03/04/12/00",
+    "picture": "https://dummyimage.com/600x400/099ae8/f7edee&text=Tea+Party",
+    "description": "Come by the party and bid on some art!",
+    "host": "Willem DaFoe"
   }
 ]
 
@@ -64,14 +84,16 @@ export const fakeUsers = [
   },
   {
     "id" : "79295466-68de-4437-9e05-be9ed5be2e2d",
-    "name":"Lara Croft",
+    "name":"Bernie Sanders",
     "avatar": "https://dummyimage.com/600x400/d4bdbd/ed1d27&text=TR",
-    "handle": "TombRaider333",
+    "handle": "BernieSanders",
     "events": {
       "7e651df2-2e96-46db-910e-3185648c0395": "No",
-      "4889f1c0-d334-41ed-b06b-ff27e30f9f36": "No",
+      "4889f1c0-d334-41ed-b06b-ff27e30f9f36": "Maybe",
       "4744d5d6-7d85-49ed-85bd-45eafbba40dc": "No",
-      "ae538f68-d0e6-44ee-a314-f5d6a2399472": "Yes"
+      "ae538f68-d0e6-44ee-a314-f5d6a2399472": "Yes",
+      "be638g69-d3t9-44ee-a314-f5d6a2399472": "",
+      "7e347yf2-291n-46rt-230e-3185648c0395": ""
   }
 },
   {
