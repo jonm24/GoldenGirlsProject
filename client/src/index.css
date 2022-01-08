@@ -1,19 +1,55 @@
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
+    "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #2e2e2e;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
-h1, h2 {
+#bernie {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  margin-right: 10px;
+  border: 1px solid rgb(97, 97, 97);
+}
+
+.welcome {
+  display: flex;
+  align-items: center;
+  background-color: white;
+  border-radius: 1vh;
+  padding: 7px 12px;
+  margin-left: auto;
+  margin-right: 20px;
+  cursor: pointer;
+}
+
+#welcome-user {
+  margin: 0px;
+  display: flex;
+  font-size: 20px;
+}
+
+.user-container {
+  width: 100%; 
+  padding: 20px 0px 0px 0px;
+}
+
+#app-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+h1,
+h2 {
   padding: 0px 10px;
   color: white;
 }
@@ -21,13 +57,12 @@ h1, h2 {
   display: flex;
   flex-wrap: wrap;
 }
-.column { 
+.column {
   flex-direction: column;
 }
 
 .App {
-  padding: 50px 3px 0px 3px;
-  padding-top: 50px;
+  padding: 0px 5px 0px 5px;
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -89,7 +124,7 @@ h1, h2 {
 .create-event:hover::after {
   animation-name: changeContent;
   animation-delay: 100ms;
-  animation-duration: .1s;
+  animation-duration: 100ms;
   animation-fill-mode: forwards;
 }
 @keyframes changeContent {
