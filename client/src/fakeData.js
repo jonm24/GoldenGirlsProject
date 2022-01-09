@@ -92,8 +92,8 @@ export const fakeUsers = [
       "4889f1c0-d334-41ed-b06b-ff27e30f9f36": "Maybe",
       "4744d5d6-7d85-49ed-85bd-45eafbba40dc": "No",
       "ae538f68-d0e6-44ee-a314-f5d6a2399472": "Yes",
-      "be638g69-d3t9-44ee-a314-f5d6a2399472": "",
-      "7e347yf2-291n-46rt-230e-3185648c0395": ""
+      "be638g69-d3t9-44ee-a314-f5d6a2399472": "Yes",
+      "7e347yf2-291n-46rt-230e-3185648c0395": null
   }
 },
   {
