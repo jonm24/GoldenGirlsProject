@@ -18,7 +18,7 @@ export default function App() {
     <div className="App">
       <User />
       <div id="app-container">
-        <h1>Golden Girls</h1>
+        <h1>KickBack</h1>
         <div id="search">
           <input type="text" className="search" placeholder="Search"></input>
         </div>
