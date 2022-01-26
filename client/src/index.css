@@ -11,6 +11,15 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
+button {
+  border: none;
+  cursor: pointer;
+}
+
+h3 {
+  color: white;
+}
+
 #login-button,
 #logout-button {
   border: none;
@@ -22,7 +31,7 @@ code {
   font-size: 24px;
 }
 
-#bernie {
+#avatar {
   width: 45px;
   height: 45px;
   border-radius: 50%;
@@ -41,6 +50,7 @@ code {
 }
 
 #welcome-user {
+  color: black;
   margin: 0px;
   display: flex;
   font-size: 20px;
@@ -96,16 +106,43 @@ h2 {
   background-color: #ffffff;
   border-radius: 1vh;
 }
+
 .events-container {
+  justify-content: space-evenly;
+}
+.events-container, .friends-container {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-evenly;
   width: 600px;
   height: 600px;
   background-color: #2e2e2e;
   border-radius: 1vh;
-  overflow: scroll;
+  overflow-y: scroll;
+}
+.friends-container {
+  margin-top: 50px;
+  flex-direction: column;
+  flex-wrap: nowrap;
+}
+
+.friends-item-container {
+  display: flex;
+  width: 300px;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #101010;
+  padding: 10px 20px;
+  border-radius: 0.5vh;
+  margin: 10px 0px;
+}
+
+.add-friend {
+  padding: 0px 15px;
+  font-size: 14px;
+  height: 75%;
+  font-weight: bolder;
+  border-radius: 0.5vh;
 }
 
 .card h1 {
@@ -147,8 +184,6 @@ h2 {
   align-items: center;
   justify-content: center;
   position: absolute;
-  border: none;
-  cursor: pointer;
   right: 25px;
   top: 35px;
   background-color: white;
@@ -183,7 +218,19 @@ h2 {
   }
 }
 
+.friends-back-btn {
+  position: absolute;
+  top: 30px;
+  left: 25px;
+  font-size: 18px;
+  font-weight: bolder;
+  background-color: white;
+  padding: 10px 15px;
+  border-radius: 0.5vh;
+}
+
 .search {
+  position: relative;
   outline: none;
   border: none;
   height: 25px;
