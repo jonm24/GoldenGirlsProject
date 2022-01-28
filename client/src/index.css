@@ -11,6 +11,17 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
+#login-button,
+#logout-button {
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  background-color: white;
+  border-radius: 1vh;
+  font-weight: bolder;
+  font-size: 24px;
+}
+
 #bernie {
   width: 45px;
   height: 45px;
@@ -38,10 +49,12 @@ code {
 .user-container {
   position: absolute;
   right: 0;
+  top: 0;
   padding: 20px 0px 0px 0px;
 }
 
 #app-container {
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -95,10 +108,10 @@ h2 {
   overflow: scroll;
 }
 
-.card h1{
+.card h1 {
   text-align: left;
   font-size: 17px;
-  color: #2e2e2e
+  color: #2e2e2e;
 }
 .card p {
   padding: 0px 5px;
@@ -115,7 +128,7 @@ h2 {
   font-size: 10px;
   text-align: left;
   margin-left: 0%;
-  color: #2e2e2e
+  color: #2e2e2e;
 }
 
 .card {
@@ -148,7 +161,7 @@ h2 {
   transition: width 0.2s, border-radius 0.2s, font-size 0.2s ease;
 }
 .create-event::after {
-  content: '+';
+  content: "+";
 }
 .create-event:hover {
   width: 150px;
@@ -163,10 +176,10 @@ h2 {
 }
 @keyframes changeContent {
   from {
-    content: '+';
+    content: "+";
   }
   to {
-    content: 'Create Event';
+    content: "Create Event";
   }
 }
 

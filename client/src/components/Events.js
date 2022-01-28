@@ -31,7 +31,7 @@ export function Events() {
   const [location, setLocation] = useState(null);
   const [time, setTime] = useState(null);
   const [description, setDescription] = useState(null);
-  const { user, allEvents, setAllEvents } = useContext(GlobalContext)
+  const { currentUser, allEvents, setAllEvents } = useContext(GlobalContext)
 
   function openModal() {
     setIsOpen(true);
@@ -49,7 +49,7 @@ export function Events() {
       location: location,
       time: time,
       description: description,
-      host: user['handle']
+      host: currentUser['handle']
     }
     console.log(newEvent)
     setAllEvents([newEvent, ...allEvents])
@@ -106,15 +106,15 @@ export function Events() {
 }
 
 function Card({ elem }) {
-  const { user, setUser, decidedList, setDecidedList } = useContext(GlobalContext)
-  let attending = user['events'][elem['id']]
+  const { currentUser, setUser, decidedList, setDecidedList } = useContext(GlobalContext)
+  let attending = currentUser['events'][elem['id']]
   let splitLocale = elem['location'].split('/')
   let cleanLocale = `${splitLocale[0]}, ${splitLocale[1]}`
 
   function setEvent(decision) {
-    let userEvents = user['events']
-    userEvents[elem['id']] = decision
-    setUser({...user, userEvents})
+    let currentUserEvents = currentUser['events']
+    currentUserEvents[elem['id']] = decision
+    setUser({...currentUser, currentUserEvents})
     if (decision !== "No") {
       setDecidedList([[elem.id, decision], ...decidedList])
     }
