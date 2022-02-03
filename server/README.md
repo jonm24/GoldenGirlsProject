@@ -1,38 +1,23 @@
 ## database schema
 
-(create dummy images)[https://dummyimage.com/]
+#### event
+  - id - uuid
+  - name - string
+  - location - string
+  - created_at - date (string)
+  - start_time - date (string)
+  - end_time - date (string) default is null
+  - rsvp_end - date (string) default is start_time
+  - picture - string
+  - description - string
+  - host - string
+  - guests - email[]
+  - isPublic - boolean
+  - capacity - integer
 
-event: 
-{
-  id - uuid
-  name - string
-  location - string
-  created_at - string
-  time - string
-  picture - string
-  description - string
-  host - string
-  guests - Map(user -> status)
-  isPublic - boolean
-  capacity - integer
-}
+#### user: 
+  - key - email
+  - events - Map(uuid -> status)
+  - friends email[]
 
-user: 
-{
-  id - uuid  
-  name - string
-  avatar - string
-  handle - string
-  events - Map(uuid -> status)
-  following - uuid[] 
-  followers - uuid[] 
-}
-
-#### fields not needed for test data
-
-- following 
-- followers
-- isPublic
-- capacity
-- guests?
 
