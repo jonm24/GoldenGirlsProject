@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, Fragment, useEffect } from 'react';
 import { GlobalContext } from "../GlobalContext";
 import Modal from 'react-modal';
 
@@ -9,7 +9,7 @@ const customModalStyles = {
     width: 'max-content',
     height: 'max-content',
     padding: '70px 100px 100px 100px',
-    top: '40%',
+    top: '50%',
     left: '50%',
     right: 'auto',
     bottom: 'auto',
@@ -26,12 +26,21 @@ function uuidv4() {
 }
 
 export function Events() {
+  const { currentUser } = useContext(GlobalContext)
+  const [userEvents, setUserEvents] = useState(null);
+
+  useEffect(() => {
+    if (currentUser) {
+      setUserEvents(currentUser.events)
+    }
+  }, [currentUser])
+  
+  // modal
   const [modalIsOpen, setIsOpen] = useState(false)
   const [name, setName] = useState(null);
   const [location, setLocation] = useState(null);
   const [time, setTime] = useState(null);
   const [description, setDescription] = useState(null);
-  const { currentUser, allEvents, setAllEvents } = useContext(GlobalContext)
 
   function openModal() {
     setIsOpen(true);
@@ -52,7 +61,7 @@ export function Events() {
       host: currentUser['handle']
     }
     console.log(newEvent)
-    setAllEvents([newEvent, ...allEvents])
+    // setAllEvents([newEvent, ...allEvents])
     setName(null)
     setLocation(null)
     setTime(null)
@@ -62,62 +71,81 @@ export function Events() {
 
   return (
     <div style={{ textAlign: "center", position: 'relative' }}>
-      <h2 style={{marginBottom:'40px'}}>My Events</h2>
+      <h1 style={{marginBottom:'40px'}}>My Events</h1>
       <button onClick={openModal} className="create-event"></button>
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={closeModal}
         style={customModalStyles}
-      >
-        <button style={{position: 'absolute', right: '10px', top: '10px'}} onClick={closeModal}>close</button>
-        <form onSubmit={(e) => addEvent(e)} className="flex column" style={{height: '400px', justifyContent: "space-around"}}>
-          <input 
-            className='modal-fields'
-            onChange={(e) => setName(e.target.value)}
-            type="text"
-            placeholder="Event Name"
-          />
-          <input 
-            className='modal-fields' 
-            onChange={(e) => setLocation(e.target.value)} 
-            type="text" placeholder="Location"
-          />
-          <input 
-            className='modal-fields' 
-            onChange={(e) => setTime(e.target.value)} 
-            type="datetime-local" placeholder="Date and Time"
-          />
-          <textarea 
-            onChange={(e) => setDescription(e.target.value)} 
-            placeholder="Description"
-            style={{height: '100px'}}
-          />
-          <button style={{height: '50px'}}type="submit">Submit</button>
-        </form>
+      > 
+        <CreateEventForm 
+          addEvent={addEvent}
+          closeModal={closeModal}
+          setName={setName}
+          setLocation={setLocation}
+          setTime={setTime}
+          setDescription={setDescription}
+        />
       </Modal>
       <div className="events-container">
-        {allEvents.map((elem, index)=>(
-          <Card key={index}  elem={elem} />
-          ))
+        {
+          !userEvents?.length ? 
+          <h1>No events</h1>
+          : 
+          <Fragment>
+            {userEvents.map((elem, index)=>(
+              <Card key={index}  elem={elem} />
+              ))
+            }
+          </Fragment>
         }
       </div>
     </div>
   );
 }
 
+function CreateEventForm({ addEvent, closeModal, setName, setLocation, setTime, setDescription}) {
+  return (
+    <Fragment>
+      <button style={{position: 'absolute', right: '10px', top: '10px', cursor: 'pointer'}} onClick={closeModal}>close</button>
+      <form onSubmit={(e) => addEvent(e)} className="flex column" style={{height: '400px', justifyContent: "space-around"}}>
+        <input 
+          className='modal-fields'
+          onChange={(e) => setName(e.target.value)}
+          type="text"
+          placeholder="Event Name"
+        />
+        <input 
+          className='modal-fields' 
+          onChange={(e) => setLocation(e.target.value)} 
+          type="text" placeholder="Location"
+        />
+        <input 
+          className='modal-fields' 
+          onChange={(e) => setTime(e.target.value)} 
+          type="datetime-local" placeholder="Date and Time"
+        />
+        <textarea 
+          onChange={(e) => setDescription(e.target.value)} 
+          placeholder="Description"
+          style={{height: '100px'}}
+        />
+        <button style={{height: '50px'}}type="submit">Submit</button>
+      </form>
+    </Fragment>
+  )
+}
+
 function Card({ elem }) {
-  const { currentUser, setUser, decidedList, setDecidedList } = useContext(GlobalContext)
-  let attending = currentUser['events'][elem['id']]
+  const { currentUser, setCurrentUser } = useContext(GlobalContext)
+  let attending = currentUser ? currentUser['events'][elem['id']] : null
   let splitLocale = elem['location'].split('/')
   let cleanLocale = `${splitLocale[0]}, ${splitLocale[1]}`
 
   function setEvent(decision) {
     let currentUserEvents = currentUser['events']
     currentUserEvents[elem['id']] = decision
-    setUser({...currentUser, currentUserEvents})
-    if (decision !== "No") {
-      setDecidedList([[elem.id, decision], ...decidedList])
-    }
+    setCurrentUser({...currentUser, currentUserEvents})
   }
 
   return (

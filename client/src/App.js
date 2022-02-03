@@ -1,45 +1,59 @@
 import "./index.css";
-import { Fragment, useState } from 'react';
-import { fakeEvents, fakeUsers } from "./fakeData";
+import { Fragment, useEffect, useState } from 'react';
 import { GlobalContext } from "./GlobalContext";
-import { Upcoming } from './components/Upcoming';
 import { Events } from './components/Events';
+import { Friends } from './components/Friends';
 import LoginButton from "./components/LoginButton";
 import LogoutButton from "./components/LogOutButton";
 import { useAuth0 } from "@auth0/auth0-react";
 
 export default function App() {
-  const { user, isAuthenticated, error, isLoading } = useAuth0();
-  console.log(user, isAuthenticated, error);
-  const [currentUser, setCurrentUser] = useState(fakeUsers[2])
-  const [allEvents, setAllEvents] = useState(fakeEvents)
-  const [decidedList, setDecidedList] = useState(
-    Object.entries(currentUser['events'])
-      .filter(value => value[1] === "Yes" || value[1] === "Maybe")
-  )
+  const { user, isAuthenticated, isLoading } = useAuth0();
+  const [currentUser, setCurrentUser] = useState(null)
+  const [friendsPage, setFriendsPage] = useState(false)
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    if (user) {
+      fetch(`https://q1weuz.deta.dev/users/login/${user.nickname}`)
+        .then(data => data.json())
+        .then(data => setCurrentUser(data.user))
+    }
+  }, [user])
 
   return (
     <div className="App">
       <div id="app-container">
-        <h1>KickBack</h1>
+        <h1 onClick={() => setFriendsPage(false)} style={{cursor: "pointer"}}>KickBack</h1>
         {
         isLoading ? 
-          <h2>Loading...</h2>
+          <h2>Fetching Google Account...</h2>
         : 
         !isAuthenticated ?
-          <LoginButton />
+          <LoginButton setCurrentUser={setCurrentUser}/>
         : 
           <Fragment>
-            <User pic={user.picture} name={user.given_name}/>
-            <div id="search">
-              <input type="text" className="search" placeholder="Search"></input>
-            </div>
-            <div className="main-container">
-              <GlobalContext.Provider value={{ currentUser, setCurrentUser, decidedList, setDecidedList, allEvents, setAllEvents }}>
-                <Upcoming />
-                <Events />
-              </GlobalContext.Provider>
-            </div>
+            <User avatar={user.picture} name={user.given_name} setFriendsPage={setFriendsPage} />
+            { 
+              !currentUser ?
+                <h2>Fetching KickBack Account...</h2>  
+              : 
+              <Fragment>
+                <div id="search">
+                  <input onChange={(e) => setSearch(e.target.value)} type="text" className="search" placeholder="Search"></input>
+                </div>
+                <div className="main-container">
+                  <GlobalContext.Provider value={{ currentUser, setCurrentUser, setFriendsPage, search }}>
+                    {
+                      friendsPage ?
+                        <Friends />
+                      : 
+                        <Events />
+                    }
+                  </GlobalContext.Provider>
+                </div>
+              </Fragment>
+            }
           </Fragment>
         }
       </div>
@@ -47,12 +61,15 @@ export default function App() {
   );
 }
 
-function User({pic, name}) {
+function User({ avatar, name, setFriendsPage }) {
   return (
     <div className="flex user-container">
       <div className="welcome">
-        <img src={pic} id="bernie" alt="bernie" />
+        <img src={avatar} id="avatar" alt="avatar" />
         <h3 id="welcome-user">{name}</h3>
+        <div onClick={() => setFriendsPage(true)}style={{paddingLeft: "10px", paddingTop: "5px"}}>
+          <img alt="friends" src="https://img.icons8.com/external-flatart-icons-outline-flatarticons/40/000000/external-contacts-twitter-flatart-icons-outline-flatarticons.png"/>
+        </div>
         <LogoutButton />
       </div>
     </div>
