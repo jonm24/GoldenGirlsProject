@@ -117,7 +117,7 @@ function Friend({ name, pending, acceptable, id, isFriend, pendingDispatch }) {
 
   function acceptFriendReq() {
     setIsLoading(true)
-    fetch(`http://127.0.0.1:5000/friends/accept/${id}/${currentUser.key}/${currentUser.version}`, { method: "PUT"})
+    fetch(`https://q1weuz.deta.dev/friends/accept/${id}/${currentUser.key}/${currentUser.version}`, { method: "PUT"})
       .then(data => data.json())
       .then(data => { 
         if (data.result) {
