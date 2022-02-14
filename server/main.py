@@ -6,6 +6,8 @@ deta = Deta()
 global_db = deta.Base('global') # where global app data is stored
 users_db = deta.Base('users') # where user objects are stored
 friends_db = deta.Base('friends') # where friend requests are stored
+events_db = deta.Base('events') # where new events are stored
+invites_db = deta.Base('invites') # wwhere event invites are stored
 app = Flask(__name__)
 CORS(app)
 
@@ -14,6 +16,11 @@ CORS(app)
 def index():
     return jsonify(status="ok")
 
+@app.route("/users/all", methods=["GET"])
+def all_users():
+    all_users = global_db.get("all_users")
+    return jsonify(results=dict(all_users).get('value') if all_users else None)
+    
 # login in user 
 # make a new object if one doesn't exist and return user
 # catch error if it does exist and return user
@@ -23,9 +30,27 @@ def user_login(key):
         user = users_db.insert({"events": [], "friends": [], "version": 0}, key)
         global_db.update({"value": global_db.util.append(key)}, "all_users")
         return jsonify(user=user)
-    except Exception as ex:
-        user = users_db.get(key)
-        return jsonify(error=f"{ex}", user=user)
+    except Exception:
+        # get user events
+        user = dict(users_db.get(key))
+        user_events = user.get("events")
+
+        # change structure: list<{ event_id: decision }> -> list<event_id>
+        user_events = [next(iter(dict(obj))) for obj in user_events]
+
+        # get invites 
+        invited_to = invites_db.fetch([{"to?contains": key}]) 
+
+        # add invites to user events list
+        [user_events.insert(0, dict(invite).get("event_id")) for invite in invited_to.items]   
+
+        # remove duplicates
+        user_events = list(set(user_events))
+
+        # get events
+        events = [events_db.get(event_id) for event_id in user_events] if len(user_events) > 0 else []
+        
+        return jsonify(user=user, events=events)
 
 # make a new friend request
 @app.route("/friends/new", methods=["POST"])
@@ -58,8 +83,71 @@ def accept_friend(key, to, version):
     else:
         return jsonify(result=False)
 
+@app.route('/events/rsvp/<event_id>/<user_id>/<decision>/<version>', methods=["GET"])
+def rsvp_event(event_id, user_id, decision, version):
+    user = dict(users_db.get(str(user_id)))
+    if int(version) == user.get('version'):
+        user_invite = {}
+        invited_to = invites_db.fetch([{"to?contains": user_id}])
+        for invite in invited_to.items:
+            if invite.get('event_id') == event_id:
+                user_invite = invite
+        
+        if user_invite.get("status") != "":
+            temp_user_events = user.get('events')
+            for obj in temp_user_events:
+                key = next(iter(obj))
+                if key == event_id:
+                    obj.update({key: decision})
+                    
+            users_db.update({"events": temp_user_events, "version": users_db.util.increment()}, user_id)
+        else: 
+            users_db.update({"events": users_db.util.append({ event_id: decision }), "version": users_db.util.increment()}, user_id)
 
+        invites_db.update( {"status": decision}, user_invite.get("key"))
+    
+        new_user = users_db.get(user_id)
+        return jsonify(result=new_user)    
+    else: 
+        return jsonify(error="user not up-to-date, please try again now", user=user)
 
+@app.route('/events/create/<version>', methods=["POST"])
+def create_event(version): 
+    # get event object
+    event = dict(request.json)
+    host_key = event.get("host")
+
+    # check user version first
+    host = dict(users_db.get(host_key))
+    if int(version) == host.get("version"):
+        # store new event
+        res = dict(events_db.put(event))
+
+        # update host's object
+        event_id = res.get("key")
+        users_db.update({ "events": users_db.util.append({ f"{event_id}": "host" }), "version": users_db.util.increment() }, host_key)
+    else: 
+        return jsonify(error="user object not up-to-date", user=host)
+    
+    ## invite guests
+    guests = res.get("invited")
+    while len(guests) > 0:
+        # get groups of 25
+        if len(guests) >= 25:
+            group = guests[0:24]
+            guests = guests[25:len(guests) - 1]
+        else:
+            group = guests
+            guests = []
+        
+        # send invites
+        invites = []
+        for guest in group:
+            invites.append({"event_id": res.get("key"), "to": guest, "status": None})
+        invites_db.put_many(invites)
+    
+    new_user = users_db.get(host_key)
+    return jsonify(user=new_user if new_user else False)
 
 ### BOILERPLATE CODE ###
 ### ONLY FOR EXAMPLE ###
