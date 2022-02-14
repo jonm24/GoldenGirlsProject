@@ -14,6 +14,11 @@ CORS(app)
 def index():
     return jsonify(status="ok")
 
+@app.route("/users/all", methods=["GET"])
+def all_users():
+    all_users = global_db.get("all_users")
+    return jsonify(results=dict(all_users).get('value') if all_users else None)
+    
 # login in user 
 # make a new object if one doesn't exist and return user
 # catch error if it does exist and return user
