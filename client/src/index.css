@@ -109,18 +109,18 @@ h2 {
 
 .events-container {
   justify-content: space-evenly;
+  width: 600px;
+
 }
 .events-container, .friends-container {
   display: flex;
   flex-wrap: wrap;
-  width: 600px;
   height: 600px;
   background-color: #2e2e2e;
   border-radius: 1vh;
   overflow-y: auto;
 }
 .friends-container {
-  margin-top: 50px;
   flex-direction: column;
   flex-wrap: nowrap;
   align-items: center;
@@ -143,8 +143,8 @@ h2 {
   justify-content: space-between;
   width: max-content;
   height: 50px;
-  padding: 3px;
-  margin: 0px auto 10px auto;
+  padding: 3px 5px;
+  margin: 20px auto 10px auto;
   background-color: #555555;
   border-radius: 1vh;
 }
@@ -159,11 +159,10 @@ h2 {
 .selected {
   background-color: white;
   color: black;
-  border: 1px solid #2e2e2e;
 }
 
 .add-friend {
-  padding: 0px 15px;
+  padding: 10px 15px;
   font-size: 14px;
   height: 75%;
   font-weight: bolder;
@@ -209,8 +208,8 @@ h2 {
   align-items: center;
   justify-content: center;
   position: absolute;
-  right: 25px;
-  top: 35px;
+  right: 15px;
+  top: 27px;
   background-color: white;
   height: 45px;
   width: 45px;
@@ -245,7 +244,7 @@ h2 {
 
 .friends-back-btn {
   position: absolute;
-  top: 30px;
+  top: -40px;
   left: 25px;
   font-size: 18px;
   font-weight: bolder;
@@ -276,6 +275,12 @@ h2 {
   padding: 12px 10px;
   font-size: 15px;
   width: 35ch;
+  border-radius: 1vh;
+  border: 1px solid black;
+}
+.modal-field:focus {
+  border: 1px solid black;
+  outline: 1px solid black;
 }
 .modal-field-container {
   display: flex;
@@ -330,4 +335,42 @@ h2 {
 }
 .black { 
   color: black;
+}
+
+.submit-btn {
+  background-color: #2e2e2e;
+  color: white;
+  border-radius: 1vh;
+  padding: 15px 20px;
+  width: max-content;
+  font-weight: bolder;
+  font-size: 16px;
+  margin: 10px auto 0px auto;
+} 
+.close-btn {
+  position: absolute; 
+  right: 20px;
+  top: 20px;
+  padding: 10px 15px;
+  cursor: pointer;
+  background-color: #2e2e2e;
+  color: white;
+  font-weight: bolder;
+  font-size: 16px;
+  border-radius: 1vh;
+}
+
+.delete-btn {
+  background-color: red;
+  padding: 10px 15px;
+  font-weight: bolder;
+  color: white;
+  border-radius: 1vh;
+  font-size: 16px;
+  margin: 0px auto 0px 30px;
+}
+
+.view-modal-container {
+  text-align: left;
+
 }

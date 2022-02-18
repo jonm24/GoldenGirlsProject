@@ -149,6 +149,17 @@ def create_event(version):
     new_user = users_db.get(host_key)
     return jsonify(user=new_user if new_user else False)
 
+@app.route('/events/delete/<key>', methods=["GET"])
+def delete_event(key):
+    events_db.delete(str(key))
+
+    invites = invites_db.fetch({"event_id?contains": key})
+    for invite in invites.items:
+        invites_db.delete(invite.get("key"))
+
+    return jsonify(result=f"event {key} deleted")
+
+
 ### BOILERPLATE CODE ###
 ### ONLY FOR EXAMPLE ###
 
