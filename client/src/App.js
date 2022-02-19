@@ -10,6 +10,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 export default function App() {
   const { user, isAuthenticated, isLoading } = useAuth0();
   const [currentUser, setCurrentUser] = useState(null)
+  const [userEvents, setUserEvents] = useState([]);
   const [friendsPage, setFriendsPage] = useState(false)
   const [search, setSearch] = useState("");
 
@@ -17,7 +18,10 @@ export default function App() {
     if (user) {
       fetch(`https://q1weuz.deta.dev/users/login/${user.nickname}`)
         .then(data => data.json())
-        .then(data => setCurrentUser(data.user))
+        .then(data => {
+          setCurrentUser(data.user) 
+          setUserEvents(data.events)
+        })
     }
   }, [user])
 
@@ -30,7 +34,7 @@ export default function App() {
           <h2>Fetching Google Account...</h2>
         : 
         !isAuthenticated ?
-          <LoginButton setCurrentUser={setCurrentUser}/>
+          <LoginButton />
         : 
           <Fragment>
             <User avatar={user.picture} name={user.given_name} setFriendsPage={setFriendsPage} />
@@ -48,7 +52,7 @@ export default function App() {
                       friendsPage ?
                         <Friends />
                       : 
-                        <Events />
+                        <Events setUserEvents={setUserEvents} userEvents={userEvents}/>
                     }
                   </GlobalContext.Provider>
                 </div>
