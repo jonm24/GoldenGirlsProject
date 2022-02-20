@@ -1,13 +1,55 @@
 import { useState, useContext, Fragment, useEffect } from 'react';
 import { GlobalContext } from "../GlobalContext";
-import Modal from 'react-modal';
+import CreateEventModal from './CreateEventModal';
 import $ from 'jquery';
-import AutoAddress from './AutoAddress';
+import Modal from 'react-modal';
+
+// setup modal
+Modal.setAppElement('#root');
+const customModalStyles = {
+  content: {
+    width: 'max-content',
+    height: 'max-content',
+    padding: '50px 80px 50px 50px',
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+    textAlign: 'center',
+    borderRadius: "3vh",
+    boxShadow: '0px 0px 9px -3px #2e2e2e'
+  },
+};
 
 export function Events({ userEvents, setUserEvents }) {
   const { currentUser, setCurrentUser, search } = useContext(GlobalContext)
   const [userDecisions, setUserDecisions] = useState([]);
   const [eventFilter, setEventFilter] = useState("all");
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [modalObject, setModalObject] = useState({});
+  const [friendsGoing, setFriendsGoing] = useState([]);
+
+  function openModal(elem) {
+    setModalObject(elem)
+    setModalIsOpen(true)
+  }
+
+  function closeModal() {
+    setModalIsOpen(false)
+  }
+
+  function deleteEvent() {
+    console.log(modalObject)
+    fetch(`https://q1weuz.deta.dev/events/delete/${modalObject.key}`)
+      .then(() => setUserEvents(userEvents.filter(elem => elem.key !== modalObject.key)))
+      .then(() => setModalIsOpen(false))
+  }
+
+  useEffect(() => {
+    setFriendsGoing(currentUser?.friends.filter(elem => modalObject?.invited?.includes(elem)))
+  }, [modalObject, currentUser])
 
   useEffect(() => {
     let temp = {}
@@ -31,7 +73,6 @@ export function Events({ userEvents, setUserEvents }) {
   
   return (
     <div style={{ textAlign: "center", position: 'relative' }}>
-      <h1 style={{marginBottom:'20px'}}>My Events</h1>
       <div className='filters-container'>
           <div id="all-filter" className='filters-item selected'>All</div>
           <div id="yes-filter" className='filters-item'>✅</div>
@@ -39,22 +80,59 @@ export function Events({ userEvents, setUserEvents }) {
           <div id="no-filter" className='filters-item'>❌</div>
           <div id="host-filter" className='filters-item'>Hosting</div>
       </div>
-      <CreateEvent 
+      <CreateEventModal
         currentUser={currentUser} 
         setCurrentUser={setCurrentUser}
         userEvents={userEvents}
         setUserEvents={setUserEvents}
       />
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        style={customModalStyles}
+      >
+        <button className="close-btn" onClick={closeModal}>close</button>
+        <div className='view-modal-container'>
+          <h2 style={{color: "black", paddingLeft: '0px'}}>{modalObject.name}</h2>
+          <div>{modalObject.description}</div>
+          <h5 style={{marginBottom: "0"}}>
+            {new Date (modalObject.time).toDateString().slice(0, -4)} 
+            @ {new Date (modalObject.time).toLocaleTimeString("en-US", {timeStyle: "long"})}
+          </h5>
+          <div className='flex'>
+            <h5 style={{marginBottom: '0px', marginRight: "50px"}}>{modalObject.location}</h5>
+            <h5>Hosted By: {modalObject.host}</h5>
+          </div>
+          {
+            friendsGoing?.length > 0 ?
+            <Fragment>
+              <h4 style={{margin: '0'}}>Friends invited:</h4>
+              <ul>
+                {friendsGoing.map((elem, index) => <li key={index}>{elem}</li>)}
+              </ul>
+            </Fragment>
+            : 
+              null 
+          }
+          </div>
+          {
+            modalObject.host === currentUser?.key ?
+              <button onClick={deleteEvent} className='delete-btn'>Delete Event</button>
+            : 
+              null
+          }
+      </Modal>
       <div className="events-container">
         {
           !userEvents?.length ? 
-            <h1>No events</h1>
+            <h2>No events</h2>
           :
           <Fragment>
             {userEvents
               .filter(elem => {
-                if ((!search || (search && elem.name.toLowerCase().startsWith(search.toLowerCase())))
-                    && (eventFilter === "all" || eventFilter === userDecisions[elem.key])) {
+                if ( elem !== null 
+                    && (!search || (search && elem.name.toLowerCase().startsWith(search.toLowerCase())))
+                    && (eventFilter === "all" || eventFilter === userDecisions[elem?.key])) {
                   return true
                 }
                 return false
@@ -63,7 +141,8 @@ export function Events({ userEvents, setUserEvents }) {
                 <Card 
                   key={index}
                   elem={elem}
-                  decision={userDecisions[elem.key]}
+                  decision={userDecisions[elem?.key]}
+                  openModal={openModal}
                 />
               ))
             }
@@ -74,7 +153,7 @@ export function Events({ userEvents, setUserEvents }) {
   );
 }
 
-function Card({ elem, decision }) {
+function Card({ elem, decision, openModal }) {
   const { currentUser, setCurrentUser } = useContext(GlobalContext)
   const [status, setStatus] = useState(decision)
   let cleanLocale = elem.location
@@ -99,7 +178,7 @@ function Card({ elem, decision }) {
 
   return (
     <div className="card flex column">
-      <div style={{cursor: 'pointer'}}> 
+      <div style={{cursor: 'pointer'}} onClick={() => openModal(elem)}> 
         <h1 className="eventName black">{elem.name}</h1>
         <p style={{margin: '5px 0px 0px 0px', fontSize: '12px', color: "black"}}>{elem.description}</p>
       </div>
@@ -134,216 +213,5 @@ function Card({ elem, decision }) {
         }
       </div>
     </div>
-  )
-}
-
-
-
-// CREATE EVENT MODAL
-
-// setup modal
-Modal.setAppElement('#root');
-const customModalStyles = {
-  content: {
-    width: 'max-content',
-    height: 'max-content',
-    padding: '70px 100px 100px 100px',
-    top: '50%',
-    left: '50%',
-    right: 'auto',
-    bottom: 'auto',
-    marginRight: '-50%',
-    transform: 'translate(-50%, -50%)',
-    textAlign: 'center', 
-  },
-};
-
-function CreateEvent ({ currentUser, setCurrentUser, userEvents, setUserEvents }) {
-  // modal
-  const [modalIsOpen, setIsOpen] = useState(false)
-  const [name, setName] = useState('');
-  const [location, setLocation] = useState('');
-  const [time, setTime] = useState('');
-  const [description, setDescription] = useState('');
-  const [invitee, setInvitee] = useState('');
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [guestList, setGuestList] = useState([]);
-  const [allUsers, setAllUsers] = useState([]);
-  const [filteredUsers, setFilteredUsers] = useState([]);
-
-  function openModal() {
-    setIsOpen(true);
-    fetch(`https://q1weuz.deta.dev/users/all`)
-      .then(data => data.json())
-      .then(data => setAllUsers(data.results))
-      .finally(console.log("got all users"))
-  }
-
-  function closeModal() {
-    setIsOpen(false);
-  }
-
-  async function addEvent() {
-    let newEvent = {
-      name: name,
-      location: location,
-      time: time,
-      description: description,
-      invited: guestList,
-      host: currentUser.key
-    }
-    let res = await fetch(`https://q1weuz.deta.dev/events/create/${currentUser.version}`,{
-      method: 'POST',
-      body: JSON.stringify(newEvent),
-      headers: {'Content-Type': 'application/json'} 
-    })
-    let newUser = await res.json()
-    setCurrentUser(newUser.user)
-    setUserEvents([...userEvents, newEvent])
-    setName(null)
-    setLocation(null)
-    setTime(null)
-    setDescription(null)
-    setGuestList([])
-    closeModal()
-  }
-
-  useEffect(() => {
-    setFilteredUsers(
-      allUsers.filter(elem => (
-          elem.toLowerCase().startsWith(invitee.toLowerCase())
-      ))
-    )
-  }, [allUsers, invitee]);
-
-  function addInvitee(invitee) {
-    setGuestList([...guestList, invitee])
-    document.getElementById("invite-input").value = ''
-    setInvitee('')
-    setShowSuggestions(false)
-    return
-  }
-
-  function removeName(index) {
-    setGuestList([...guestList.slice(0, index), ...guestList.slice(index+1)])
-  }
-
-  function handleGuestInput(e) {
-    if (document.activeElement.classList[0].includes("user-suggest-card")) {
-        if (e.key === 'ArrowDown') {
-          document.activeElement.nextElementSibling?.focus()
-        } else if (e.key === "ArrowUp") {
-          document.activeElement.previousElementSibling?.focus()
-        } else if ( e.key === "Enter") {
-          addInvitee(document.activeElement.innerHTML);
-          document.getElementById("invite-input").focus()
-        }
-      return
-    }
-  
-    if (e.key === 'Enter' && e.target.value !== '') {
-      addInvitee(e.target.value)
-      return
-    }
-    if (e.key === "ArrowDown" && e.target.value !== '') {
-      document.getElementById("suggestions").firstElementChild.focus()      
-    }
-    setInvitee(e.target.value)
-    setShowSuggestions(e.target.value !== '' ? true : false)
-  }
-
-  return (
-    <Fragment>
-      <button onClick={openModal} className="create-event"></button>
-      <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={closeModal}
-        style={customModalStyles}
-      > 
-        <h2 style={{color: "black"}}>Create an Event</h2>
-        <button style={{position: 'absolute', right: '10px', top: '10px', cursor: 'pointer'}} onClick={closeModal}>close</button>
-        <div className="flex column" style={{justifyContent: "space-around"}}>
-          <div className='modal-field-container'>
-            <h4 className='modal-title'>Event name:</h4>
-            <input 
-              className='modal-field'
-              onChange={(e) => setName(e.target.value)}
-              type="text"
-              placeholder="Name"
-            />
-          </div>
-          <div className='modal-field-container'>
-            <h4 className='modal-title'>Location:</h4>
-            <AutoAddress setLocation={setLocation}/>
-          </div>
-          <div className='modal-field-container'>
-            <h4 className='modal-title'>Date & Time:</h4>
-            <input 
-              style={{width: "32.5ch"}}
-              className='modal-field' 
-              placeholder={`${new Date(Date.now()).toISOString().split(".")[0].slice(0, -3)}`}
-              onChange={(e) => setTime(e.target.value)} 
-              type="datetime-local"
-            />
-          </div>
-          <div className='modal-field-container'>
-            <h4 className='modal-title'>Description:</h4>
-            <textarea 
-              onChange={(e) => setDescription(e.target.value)} 
-              placeholder="Description"
-              style={{height: '100px', padding: "10px 10px", width: '69%'}}
-            />
-          </div>
-          <div className='modal-field-container' style={{position: 'relative'}}>
-            <h4 className='modal-title'>Invite:</h4>
-            <input 
-              autoComplete='off'
-              id="invite-input"
-              className='modal-field'
-              onKeyUp={(e) => handleGuestInput(e)}
-              placeholder='Type Email and Press Enter'
-            />
-            {
-              showSuggestions ?
-                <div tabIndex={-1} id="suggestions" className='suggestions'>
-                  {
-                    filteredUsers?.length > 0 ?
-                      filteredUsers.map((elem, index) => (
-                        <div
-                          tabIndex={index}
-                          onKeyUp={(e) => handleGuestInput(e)}
-                          onClick={() => { addInvitee(elem) }}
-                          className='user-suggest-card' key={index}
-                        >
-                          {elem}
-                        </div>
-                      ))
-                    : 
-                      <div className='user-suggest-card'>No matching users.</div>
-                  }
-                </div>
-              : 
-                null
-            }
-          </div>
-          <div className='flex' style={{width: "425px", marginBottom: "10px", justifyContent: "flex-end"}}>
-            {
-              guestList.map((elem, index) => (
-                <div className='guest-chip' key={index} style={{margin: '5px'}}>
-                  <p style={{margin: 0}}>{elem}</p>
-                  <h5 
-                    style={{margin: '0px 0px 0px 10px', cursor: 'pointer'}}
-                    onClick={() => removeName(index)}
-                  >
-                    X
-                  </h5>
-                </div>
-              ))
-            }
-          </div>
-          <button onClick={addEvent} style={{height: '50px'}}type="submit">Submit</button>
-        </div>
-      </Modal>
-    </Fragment>
   )
 }

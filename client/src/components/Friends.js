@@ -26,62 +26,77 @@ export function Friends() {
 
   return (
     <div style={{textAlign: "center", position: "relative"}}>
-      <button onClick={() => setFriendsPage(false)} className="friends-back-btn">{`Back`}</button>
-      <div className="friends-container">
-        <h3>My Friends</h3>
+      {
+        allUsers?.length ? 
+          <Fragment>
+            <button onClick={() => setFriendsPage(false)} className="friends-back-btn">{`Back`}</button>
+            <div className="flex" style={{justifyContent: "space-between", width: "77%", margin: "0 auto"}}>
+              <h2>Friends</h2>
+              <h2>All Users</h2>
+              <h2>Requests</h2>
+            </div>
+          </Fragment>
+        : 
+          null 
+      }
+      <div className="friends-container" style={{ width: "auto"}}>
         {
           !allUsers?.length ?
-            <h3>Fetching users and pending requests...</h3>
+            <h2 style={{marginTop: "50px"}}>Fetching users and pending requests...</h2>
           :  
-            <Fragment>
-            {currentUser.friends.map((elem, index) => (
-                <Friend
-                  key={index}
-                  name={elem}
-                  isFriend={true}
-                />
-              ))
-            }
-            <h3>Requests</h3>
-            {
-              pending?.length ? 
-              pending.map((elem, index) => (
-                <Friend 
-                  key={index}
-                  id={elem.key}
-                  acceptable={elem.to === currentUser.key}
-                  name={elem.to === currentUser.key ? elem.from : elem.to}
-                  pending={true}
-                />
-              ))
-              : 
-              <h3>No Pending Requests</h3>
-            }
-            <h3>All Users</h3>
-            {
-              allUsers.filter(user => {
-                if (
-                    (!search || (search && user.toLowerCase().startsWith(search.toLowerCase()))) 
-                    && user.toLowerCase() !== currentUser.key.toLowerCase() 
-                    && !pending?.find(elem => 
-                      (elem.to.toLowerCase() === user.toLowerCase() || elem.from.toLowerCase() === user.toLowerCase())
-                    )
-                    && !currentUser?.friends.find(elem => 
-                      elem.toLowerCase() === user.toLowerCase()
-                    )
-                  ) {
-                  return user
+            <div className="flex" style={{flexWrap: "nowrap"}}>
+              <div style={{marginRight: "10px"}}>
+                {currentUser.friends.map((elem, index) => (
+                    <Friend
+                      key={index}
+                      name={elem}
+                      isFriend={true}
+                    />
+                  ))
                 }
-                return false
-              }).map((user, index) => (
-                <Friend 
-                  key={index}
-                  name={user}
-                  pendingDispatch={pendingDispatch}
-                />
-              ))
-            }
-            </Fragment>
+              </div>
+              <div style={{overflowY: "scroll", width: '340px', marginRight: '10px'}}>
+                {
+                  allUsers.filter(user => {
+                    if (
+                        (!search || (search && user.toLowerCase().startsWith(search.toLowerCase()))) 
+                        && user.toLowerCase() !== currentUser.key.toLowerCase() 
+                        && !pending?.find(elem => 
+                          (elem.to.toLowerCase() === user.toLowerCase() || elem.from.toLowerCase() === user.toLowerCase())
+                        )
+                        && !currentUser?.friends.find(elem => 
+                          elem.toLowerCase() === user.toLowerCase()
+                        )
+                      ) {
+                      return user
+                    }
+                    return false
+                  }).map((user, index) => (
+                    <Friend 
+                      key={index}
+                      name={user}
+                      pendingDispatch={pendingDispatch}
+                    />
+                  ))
+                }
+              </div>
+              <div>
+                {
+                  pending?.length ? 
+                  pending.map((elem, index) => (
+                    <Friend 
+                      key={index}
+                      id={elem.key}
+                      acceptable={elem.to === currentUser.key}
+                      name={elem.to === currentUser.key ? elem.from : elem.to}
+                      pending={true}
+                    />
+                  ))
+                  : 
+                  <h3>No Pending Requests</h3>
+                }
+              </div>
+            </div>
         }
       </div>
     </div>
