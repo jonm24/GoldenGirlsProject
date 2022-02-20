@@ -183,7 +183,7 @@ function Card({ elem, decision, openModal }) {
         <p style={{margin: '5px 0px 0px 0px', fontSize: '12px', color: "black"}}>{elem.description}</p>
       </div>
       <div className="flex" style={{alignSelf: 'flex-end', width: '100%', alignItems: 'baseline', justifyContent: 'space-between'}}>
-        <h2>{cleanLocale}</h2>
+        <h2>{String(cleanLocale).slice(0,28)}</h2>
         {
           elem.host === currentUser.key ? 
             <p>Host</p>
