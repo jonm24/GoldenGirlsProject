@@ -43,7 +43,7 @@ export function Events({ userEvents, setUserEvents }) {
   function deleteEvent() {
     console.log(modalObject)
     fetch(`https://q1weuz.deta.dev/events/delete/${modalObject.key}`)
-      .then(() => setUserEvents(userEvents.filter(elem => elem.key !== modalObject.key)))
+      .then(() => setUserEvents(userEvents.filter(elem => elem?.key !== modalObject.key)))
       .then(() => setModalIsOpen(false))
   }
 
