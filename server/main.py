@@ -113,6 +113,9 @@ def rsvp_event(event_id, user_id, decision, version):
 
 @app.route('/events/create/<version>', methods=["POST"])
 def create_event(version): 
+    # dict event is stored in
+    res = {}
+
     # get event object
     event = dict(request.json)
     host_key = event.get("host")
@@ -147,7 +150,7 @@ def create_event(version):
         invites_db.put_many(invites)
     
     new_user = users_db.get(host_key)
-    return jsonify(user=new_user if new_user else False)
+    return jsonify(user=new_user, event=res)
 
 @app.route('/events/delete/<key>', methods=["GET"])
 def delete_event(key):

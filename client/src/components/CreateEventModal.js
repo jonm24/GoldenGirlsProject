@@ -60,9 +60,9 @@ export default function CreateEventModal ({ currentUser, setCurrentUser, userEve
       body: JSON.stringify(newEvent),
       headers: {'Content-Type': 'application/json'} 
     })
-    let newUser = await res.json()
-    setCurrentUser(newUser.user)
-    setUserEvents([...userEvents, newEvent])
+    let data = await res.json()
+    setCurrentUser(data?.user)
+    setUserEvents([...userEvents, data?.event])
     setName(null)
     setLocation(null)
     setTime(null)
